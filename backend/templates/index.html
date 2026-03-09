@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Used Car Intelligence Dashboard</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+<h1>🚗 Used Car Intelligence Dashboard</h1>
+<p class="subtitle">ML-powered price prediction & smart recommendations</p>
+
+
+<form id="predictForm">
+
+<h3>📌 Vehicle Details</h3>
+
+<div class="grid">
+
+<div class="field">
+<label>Manufacturing Year</label>
+
+<select name="year" required>
+
+<option value="">Select year</option>
+
+{% for y in range(2025,1979,-1) %}
+<option value="{{y}}">{{y}}</option>
+{% endfor %}
+
+</select>
+
+</div>
+
+
+<div class="field">
+<label>Mileage (miles)</label>
+
+<input type="number"
+name="odometer"
+min="0"
+max="1000000"
+required>
+
+</div>
+
+
+<div class="field">
+<label>Manufacturer</label>
+
+<input type="text"
+name="manufacturer"
+placeholder="Toyota"
+required>
+
+</div>
+
+
+<div class="field">
+
+<label>Seller Listed Price (optional)</label>
+
+<input type="number"
+name="listed_price"
+id="listedPrice"
+placeholder="Enter price in selected currency">
+
+<small id="priceHint" class="hint">
+Example: $15000
+</small>
+
+</div>
+
+</div>
+
+
+<h3>⚙ Vehicle Specifications</h3>
+
+<div class="grid">
+
+<div class="field">
+<label>Fuel Type</label>
+
+<select name="fuel">
+<option value="gas">Gas</option>
+<option value="diesel">Diesel</option>
+<option value="electric">Electric</option>
+<option value="hybrid">Hybrid</option>
+</select>
+
+</div>
+
+
+<div class="field">
+<label>Transmission</label>
+
+<select name="transmission">
+<option value="automatic">Automatic</option>
+<option value="manual">Manual</option>
+</select>
+
+</div>
+
+
+<div class="field">
+<label>Drive Type</label>
+
+<select name="drive">
+<option value="fwd">FWD</option>
+<option value="rwd">RWD</option>
+<option value="4wd">4WD</option>
+</select>
+
+</div>
+
+
+<div class="field">
+<label>Vehicle Type</label>
+
+<select name="type">
+<option value="sedan">Sedan</option>
+<option value="suv">SUV</option>
+<option value="truck">Truck</option>
+</select>
+
+</div>
+
+
+<div class="field">
+<label>Condition</label>
+
+<select name="condition">
+<option value="excellent">Excellent</option>
+<option value="good">Good</option>
+<option value="fair">Fair</option>
+</select>
+
+</div>
+
+
+<div class="field">
+<label>Currency</label>
+
+<select name="currency" id="currencySelect">
+
+<option value="USD">USD ($)</option>
+<option value="INR">INR (₹)</option>
+<option value="EUR">EUR (€)</option>
+<option value="GBP">GBP (£)</option>
+
+</select>
+
+</div>
+
+</div>
+
+<button type="submit">Analyze Vehicle</button>
+
+</form>
+
+
+<div id="errorBox" class="error hidden"></div>
+
+
+<div id="resultBox" class="result hidden">
+
+<strong>Predicted Price:</strong>
+<span id="predictedPrice"></span><br>
+
+<strong>Vehicle Age:</strong>
+<span id="vehicleAge"></span><br>
+
+<strong>Deal Status:</strong>
+<span id="dealStatus"></span><br>
+
+<strong>Recommendation:</strong>
+<span id="recommendation"></span>
+
+</div>
+
+
+<h3>🧠 AI Insights</h3>
+
+<div class="insights-grid">
+
+<div class="insight-card confidence">
+<h4>Confidence</h4>
+<span id="confidenceScore">--</span>
+</div>
+
+<div class="insight-card price-range">
+<h4>Expected Range</h4>
+<span id="priceRange">--</span>
+</div>
+
+<div class="insight-card deal">
+<h4>Deal Status</h4>
+<span id="dashDealStatus">--</span>
+</div>
+
+<div class="insight-card recommendation">
+<h4>Recommendation</h4>
+<span id="dashRecommendation">--</span>
+</div>
+
+</div>
+
+
+<h3>📊 Price Comparison</h3>
+
+<div class="chart-card">
+
+<canvas id="priceChart"></canvas>
+
+</div>
+
+
+<h3>🚘 Similar Cars in Market</h3>
+
+<div class="table-container">
+
+<table class="similar-table">
+
+<thead>
+
+<tr>
+<th>Manufacturer</th>
+<th>Year</th>
+<th>Mileage</th>
+<th>Price</th>
+</tr>
+
+</thead>
+
+<tbody id="similarCarsTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
