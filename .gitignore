@@ -1,6 +1,7 @@
 # Virtual environment
 venv/
 venv310/
+venv333/
 
 # Python cache
 __pycache__/
@@ -8,6 +9,7 @@ __pycache__/
 
 # Environment variables
 .env
+.env.local
 
 # Jupyter notebook checkpoints
 .ipynb_checkpoints/
@@ -16,8 +18,20 @@ __pycache__/
 *.pkl
 *.joblib
 
+# Data files (too large for git)
+data/*.csv
+
 # Logs
 logs/
+*.log
 
 # System files
 .DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Freebuff internal
+.freebuff/

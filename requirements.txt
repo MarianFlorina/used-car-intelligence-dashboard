@@ -1,7 +1,10 @@
+flask
 pandas
 numpy
 scikit-learn
 xgboost
 joblib
-flask
+shap
+requests
+python-dotenv
 matplotlib
