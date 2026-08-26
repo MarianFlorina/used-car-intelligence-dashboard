@@ -1,257 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <title>Used Car Intelligence Dashboard</title>
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
-
-
 <body>
-
 <div class="app">
-
-<h1>🚗 Used Car Intelligence Dashboard</h1>
-<p class="subtitle">ML-powered price prediction & smart recommendations</p>
-
+<h1>Used Car Intelligence Dashboard</h1>
+<p class="subtitle">ML-powered price prediction, explainability & market intelligence</p>
+<div class="live-data-banner" id="liveDataBanner">
+    <span class="live-dot"></span>
+    <span id="liveDataStatus">Loading live data...</span>
+    <span class="live-source" id="liveDataSource"></span>
+</div>
 
 <form id="predictForm">
-
-<h3>📌 Vehicle Details</h3>
-
+<h3>Vehicle Details</h3>
 <div class="grid">
-
 <div class="field">
 <label>Manufacturing Year</label>
-
 <select name="year" required>
-
 <option value="">Select year</option>
-
 {% for y in range(2025,1979,-1) %}
 <option value="{{y}}">{{y}}</option>
 {% endfor %}
-
 </select>
-
 </div>
-
-
 <div class="field">
 <label>Mileage (miles)</label>
-
-<input type="number"
-name="odometer"
-min="0"
-max="1000000"
-required>
-
+<input type="number" name="odometer" min="0" max="1000000" required>
 </div>
-
-
 <div class="field">
 <label>Manufacturer</label>
-
-<input type="text"
-name="manufacturer"
-placeholder="Toyota"
-required>
-
+<input type="text" name="manufacturer" placeholder="Toyota" required>
 </div>
-
-
 <div class="field">
-
 <label>Seller Listed Price (optional)</label>
-
-<input type="number"
-name="listed_price"
-id="listedPrice"
-placeholder="Enter price in selected currency">
-
-<small id="priceHint" class="hint">
-Example: $15000
-</small>
-
+<input type="number" name="listed_price" id="listedPrice" placeholder="Enter price in selected currency">
+<small id="priceHint" class="hint">Example: $15000</small>
+</div>
 </div>
 
-</div>
-
-
-<h3>⚙ Vehicle Specifications</h3>
-
+<h3>Vehicle Specifications</h3>
 <div class="grid">
-
 <div class="field">
 <label>Fuel Type</label>
-
 <select name="fuel">
 <option value="gas">Gas</option>
 <option value="diesel">Diesel</option>
 <option value="electric">Electric</option>
 <option value="hybrid">Hybrid</option>
 </select>
-
 </div>
-
-
 <div class="field">
 <label>Transmission</label>
-
 <select name="transmission">
 <option value="automatic">Automatic</option>
 <option value="manual">Manual</option>
 </select>
-
 </div>
-
-
 <div class="field">
 <label>Drive Type</label>
-
 <select name="drive">
 <option value="fwd">FWD</option>
 <option value="rwd">RWD</option>
 <option value="4wd">4WD</option>
 </select>
-
 </div>
-
-
 <div class="field">
 <label>Vehicle Type</label>
-
 <select name="type">
 <option value="sedan">Sedan</option>
 <option value="suv">SUV</option>
 <option value="truck">Truck</option>
 </select>
-
 </div>
-
-
 <div class="field">
 <label>Condition</label>
-
 <select name="condition">
 <option value="excellent">Excellent</option>
 <option value="good">Good</option>
 <option value="fair">Fair</option>
 </select>
-
 </div>
-
-
 <div class="field">
 <label>Currency</label>
-
 <select name="currency" id="currencySelect">
-
 <option value="USD">USD ($)</option>
-<option value="INR">INR (₹)</option>
-<option value="EUR">EUR (€)</option>
-<option value="GBP">GBP (£)</option>
-
+<option value="INR">INR</option>
+<option value="EUR">EUR</option>
+<option value="GBP">GBP</option>
 </select>
-
 </div>
-
 </div>
-
 <button type="submit">Analyze Vehicle</button>
-
 </form>
-
 
 <div id="errorBox" class="error hidden"></div>
 
-
 <div id="resultBox" class="result hidden">
-
-<strong>Predicted Price:</strong>
-<span id="predictedPrice"></span><br>
-
-<strong>Vehicle Age:</strong>
-<span id="vehicleAge"></span><br>
-
-<strong>Deal Status:</strong>
-<span id="dealStatus"></span><br>
-
-<strong>Recommendation:</strong>
-<span id="recommendation"></span>
-
+<strong>Predicted Price:</strong> <span id="predictedPrice"></span><br>
+<strong>Vehicle Age:</strong> <span id="vehicleAge"></span><br>
+<strong>Deal Status:</strong> <span id="dealStatus"></span><br>
+<strong>Recommendation:</strong> <span id="recommendation"></span>
 </div>
 
-
-<h3>🧠 AI Insights</h3>
-
+<!-- AI Insights -->
+<h3>AI Insights</h3>
 <div class="insights-grid">
-
 <div class="insight-card confidence">
 <h4>Confidence</h4>
 <span id="confidenceScore">--</span>
 </div>
-
 <div class="insight-card price-range">
 <h4>Expected Range</h4>
 <span id="priceRange">--</span>
 </div>
-
 <div class="insight-card deal">
 <h4>Deal Status</h4>
 <span id="dashDealStatus">--</span>
 </div>
-
 <div class="insight-card recommendation">
 <h4>Recommendation</h4>
 <span id="dashRecommendation">--</span>
 </div>
-
 </div>
 
-
-<h3>📊 Price Comparison</h3>
-
+<!-- Model Comparison -->
+<h3>Model Comparison</h3>
 <div class="chart-card">
-
-<canvas id="priceChart"></canvas>
-
+<canvas id="modelChart"></canvas>
 </div>
 
+<!-- SHAP Explainability -->
+<h3>Why This Price? (SHAP Explainability)</h3>
+<div class="chart-card">
+<canvas id="shapChart"></canvas>
+</div>
 
-<h3>🚘 Similar Cars in Market</h3>
+<!-- Depreciation Curve -->
+<h3>Depreciation Curve</h3>
+<div class="chart-card">
+<canvas id="depreciationChart"></canvas>
+</div>
 
+<!-- Total Cost of Ownership -->
+<h3>Total Cost of Ownership (5-Year Estimate)</h3>
+<div class="tco-grid">
+<div class="tco-card">
+<h4>Fuel (annual)</h4>
+<span id="tcoFuel">--</span>
+</div>
+<div class="tco-card">
+<h4>Insurance (annual)</h4>
+<span id="tcoInsurance">--</span>
+</div>
+<div class="tco-card">
+<h4>Maintenance (annual)</h4>
+<span id="tcoMaintenance">--</span>
+</div>
+<div class="tco-card">
+<h4>Monthly Cost</h4>
+<span id="tcoMonthly">--</span>
+</div>
+</div>
+<p><strong>5-Year Total:</strong> <span id="tcoTotal">--</span></p>
+
+<!-- Negotiation Calculator -->
+<div id="negotiationBox" class="hidden">
+<h3>Negotiation Calculator</h3>
+<div class="negotiation-grid">
+<div class="neg-card">
+<h4>Listed Price</h4>
+<span id="negListed">--</span>
+</div>
+<div class="neg-card">
+<h4>Fair Price</h4>
+<span id="negFair">--</span>
+</div>
+<div class="neg-card">
+<h4>Suggested Offer</h4>
+<span id="negOffer">--</span>
+</div>
+<div class="neg-card">
+<h4>Walk Away Price</h4>
+<span id="negWalk">--</span>
+</div>
+</div>
+<h4>Negotiation Tips</h4>
+<ul id="negTips"></ul>
+</div>
+
+<!-- Price Comparison Chart -->
+<h3>Price Comparison</h3>
+<div class="chart-card">
+<canvas id="priceChart"></canvas>
+</div>
+
+<!-- Market Intelligence -->
+<h3>Market Intelligence</h3>
+<div class="market-grid">
+<div class="market-card">
+<h4>Average Price</h4>
+<span id="marketAvg">--</span>
+</div>
+<div class="market-card">
+<h4>Median Price</h4>
+<span id="marketMedian">--</span>
+</div>
+<div class="market-card">
+<h4>Total Listings</h4>
+<span id="marketListings">--</span>
+</div>
+<div class="market-card">
+<h4>Avg Mileage</h4>
+<span id="marketMileage">--</span>
+</div>
+</div>
+
+<h3>Price Trend by Year</h3>
+<div class="chart-card">
+<canvas id="trendChart"></canvas>
+</div>
+
+<!-- Regional Comparison -->
+<h3>Price by Condition</h3>
+<div class="chart-card">
+<canvas id="regionalChart"></canvas>
+</div>
+
+<!-- Similar Cars -->
+<h3>Similar Cars in Market</h3>
 <div class="table-container">
-
 <table class="similar-table">
-
 <thead>
-
 <tr>
 <th>Manufacturer</th>
 <th>Year</th>
 <th>Mileage</th>
 <th>Price</th>
 </tr>
-
 </thead>
-
 <tbody id="similarCarsTable"></tbody>
-
 </table>
-
 </div>
+
+<!-- Save & Compare -->
+<h3>Saved Comparisons</h3>
+<div id="compareList" class="compare-list"></div>
 
 </div>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
-
 </body>
-
 </html>
